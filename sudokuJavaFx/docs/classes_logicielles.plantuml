@@ -1,0 +1,113 @@
+@startuml
+
+'!theme plain
+'top to bottom direction
+skinparam defaultFontName Consolas
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide attributes
+'hide methods
+
+set namespaceSeparator none
+
+package javafx.* {
+    class Application
+    class Stage
+    class Scene {
+        Scene(Parent,\n  width: double,\n  height: double\n)
+    }
+    class BorderPane
+    class GridPane
+    class StackPane
+
+    Application -[hidden]-> Stage
+    Stage *--> "1" Scene
+    Scene -[hidden]- BorderPane
+    BorderPane -[hidden]- GridPane
+    GridPane -[hidden]- StackPane
+}
+
+set namespaceSeparator .
+
+package grid {
+    class GridApp
+
+    Application <|-- GridApp
+}
+
+package grid.model {
+    class Board {
+    }
+
+    class Grid {
+    }
+
+    class Cell {
+    }
+
+    Board ..> Grid : <<create>>
+    Board *--> "1" Grid
+    Grid *--> "10x10" Cell
+    Grid ..> Cell : <<create>>
+
+}
+
+package grid.viewmodel {
+    class BoardViewModel {
+        BoardViewModel(Board)
+    }
+
+    class GridViewModel {
+        GridViewModel(Board)
+    }
+
+    class CellViewModel {
+        CellViewModel(\n  line: int,\n  col: int,\n  Board\n)
+    }
+
+    BoardViewModel *--> "1" GridViewModel
+    BoardViewModel ..> GridViewModel : <<create>>
+    GridViewModel ..> CellViewModel : <<create>>
+    GridViewModel *--> "10x10" CellViewModel
+}
+
+package grid.view {
+    class BoardView {
+        BoardView(Stage, BoardViewModel)
+    }
+
+    class GridView {
+        GridView(\n  GridViewModel,\n  gridWidth: DoubleProperty\n)
+    }
+
+    class CellView {
+        CellView(\n  CellViewModel,\n  cellWidth: DoubleProperty\n)
+    }
+
+    BoardView ..> GridView : <<create>>
+    BoardView *--> "1" GridView
+    GridView *--> "10x10" CellView
+    GridView ..> CellView : <<create>>
+}
+
+GridApp ..> "1" Scene : <<create>>
+GridApp *-l-> "1" Stage
+Scene *--> "1" BoardView
+BorderPane <|-r- BoardView
+GridPane <|-r- GridView
+StackPane <|-r- CellView
+
+GridApp ..> Board : <<create>>
+GridApp ..> BoardViewModel : <<create>>
+GridApp ..> BoardView : <<create>>
+
+BoardView *-r-> "1" BoardViewModel
+GridView .r.> GridViewModel : <<use>>
+CellView .r.> CellViewModel : <<use>>
+
+BoardViewModel *-r-> "1" Board
+GridViewModel *-r-> "1" Board
+CellViewModel *-r-> "1" Board
+
+@enduml
