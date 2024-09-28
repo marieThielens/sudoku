@@ -6,10 +6,8 @@ import sudoku.model.Board;
 import sudoku.model.Cell;
 import sudoku.model.Grid;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 
 public class BoardViewModel {
     private final Board board;
@@ -32,7 +30,8 @@ public class BoardViewModel {
     public BooleanProperty isFullProperty() {
         return board.isFullProperty();
     }
-    // sauvegarder la partie
+
+    // sauvegarder la partie --------------------
     public void saveGameFile(File file){
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 
@@ -59,5 +58,67 @@ public class BoardViewModel {
             writer.newLine(); // Nouvelle ligne après chaque ligne de la grille
         }
     }
+
+    // Ouvrir le fichier
+    public void openGameFile(File file) {
+        if(file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+                ArrayList<String> linesList = new ArrayList<>();
+                String line;
+
+                // Lire toutes les lignes du fichier et les ajouter dans l'ArrayList
+                while ((line = reader.readLine()) != null) {
+                    linesList.add(line);
+                }
+
+                int lineIndex = 0;
+                Cell[][] loadedSolution = new Cell[Grid.getGridWidth()][Grid.getGridWidth()];
+                Cell[][] loadedGame = new Cell[Grid.getGridWidth()][Grid.getGridWidth()];
+
+                // Parcourir les lignes pour charger la grille solution et la grille de jeu
+                while (lineIndex < linesList.size()) {
+                    line = linesList.get(lineIndex);
+
+                    // Charger la solution
+                    if (line.startsWith("Sudoku Solution:")) {
+                        lineIndex++;
+                        for (int i = 0; i < Grid.getGridWidth(); i++) {
+                            String[] values = linesList.get(lineIndex).split(" ");
+                            for (int j = 0; j < Grid.getGridWidth(); j++) {
+                                loadedSolution[i][j] = new Cell(Integer.parseInt(values[j]));
+                            }
+                            lineIndex++;
+                        }
+                        continue;
+                    }
+                    // Charger la solution
+                    if (line.startsWith("Sudoku Game:")) {
+                        lineIndex++;
+                        for (int i = 0; i < Grid.getGridWidth(); i++) {
+                            String[] values = linesList.get(lineIndex).split(" ");
+                            for (int j = 0; j < Grid.getGridWidth(); j++) {
+                                loadedGame[i][j] = new Cell(Integer.parseInt(values[j]));
+                            }
+                            lineIndex++;
+                        }
+                    }
+
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur lors de la lecture d'un nombre dans le fichier.");
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void undo(){
+        board.undo();
+    }
+
 
 }

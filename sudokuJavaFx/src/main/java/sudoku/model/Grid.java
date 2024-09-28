@@ -70,6 +70,8 @@ public class Grid {
     public Cell[][] getSudokuGameTab() {
         return sudokuGame;
     }
+
+
     ReadOnlyObjectProperty<CellStateEnum> valueEnumProperty(int line, int col) {
         return sudokuGame[line][col].cellStateEnumProperty();
     }
@@ -186,6 +188,20 @@ public class Grid {
     }
 
 
+    public void setGrid(Grid newGrid) {
+        // Parcourir chaque ligne et chaque colonne
+        for (int i = 0; i < GRID_WIDTH; i++) {
+            for (int j = 0; j < GRID_WIDTH; j++) {
+                // Copier la valeur de la cellule depuis newGrid
+                this.sudokuGame[i][j].setValueCase(newGrid.getSudokuGameTab()[i][j].getValueCase());
+
+                //this.sudokuGame[i][j].setCellStateEnum(newGrid.getSudokuGameTab()[i][j].getCellStateEnum());
+
+                // Si nécessaire, copier la solution du Sudoku aussi (si elle fait partie de l'objet Grid)
+                this.sudokuSoluce[i][j].setValueCase(newGrid.getSudokuSoluceTab()[i][j].getValueCase());
+            }
+        }
+    }
 
     // Méthode pour ajouter un listener à une cellule
 //    private void addCellValueChangeListener(Cell cell) {

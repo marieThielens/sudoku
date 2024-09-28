@@ -33,7 +33,6 @@ public class Cell {
     }
     ReadOnlyObjectProperty<CellStateEnum> cellStateEnumProperty() { return cellStateEnum;}
 
-    // ---------fin getter & setter ------------
 
     boolean isEditable() {
         return cellStateEnum.get() == CellStateEnum.EDITABLE;

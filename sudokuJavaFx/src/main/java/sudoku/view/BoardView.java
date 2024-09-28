@@ -30,13 +30,14 @@ public class BoardView  extends BorderPane {
     private static String buttonName(int i) {
         return Integer.toString(i);
     }
+    private final Button undoButton = new Button("Undo");
     // Menu déroulant
     private final MenuBar dropDownMenu = new MenuBar(); // barre de déroulement
     private final Menu menu = new Menu("Fichier");
     private final MenuItem newGame = new MenuItem("Nouvelle partie");
     private final MenuItem openGame = new MenuItem("Ouvrir");
     private final MenuItem saveAs = new MenuItem("Sauvegarder");
-    private final MenuItem exit= new MenuItem("Exit");
+    private final MenuItem exit = new MenuItem("Exit");
 
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
         this.boardViewModel = boardViewModel;
@@ -104,7 +105,7 @@ public class BoardView  extends BorderPane {
             // Ajout des boutons au GridPane, 3 boutons par ligne
             gridPaneButton.add(button, (i -1) % 3, (i -1) / 3);
         }
-        containerDroite.getChildren().add(gridPaneButton);
+        containerDroite.getChildren().addAll(gridPaneButton, undoButton);
 
         setRight(containerDroite);
     }
@@ -121,8 +122,8 @@ public class BoardView  extends BorderPane {
             fileChooser.setTitle("Sauvegarder partie");
 
             // Définir les filtres de type de fichier
-            FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("XSB Files", "*.xsb");
-            fileChooser.getExtensionFilters().add(jsonFilter);
+            FileChooser.ExtensionFilter xsbFilter = new FileChooser.ExtensionFilter("XSB Files", "*.xsb");
+            fileChooser.getExtensionFilters().add(xsbFilter);
 
             // Ouvrir la boîte de dialogue pour choisir le fichier
             File file = fileChooser.showSaveDialog(getScene().getWindow());
@@ -131,6 +132,26 @@ public class BoardView  extends BorderPane {
                 boardViewModel.saveGameFile(file);
             }
         });
+
+        exit.setOnAction(e -> {
+            // pour fermer l'application
+            Stage stage = (Stage) getScene().getWindow();
+            stage.close();
+        });
+
+        openGame.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XSB Files", "*.xsb"));
+            // Ouvrir la boîte de dialogue pour choisir le fichier
+            File selectedFile = fileChooser.showOpenDialog(new Stage());
+            if(selectedFile != null ) {
+                boardViewModel.openGameFile(selectedFile);
+            }
+        });
+        undoButton.setOnAction(e-> {
+            boardViewModel.undo();
+        });
+
     }
 
 }

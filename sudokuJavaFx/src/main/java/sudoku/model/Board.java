@@ -12,7 +12,7 @@ public class Board {
 
     private final Grid grid = new Grid();
     private BooleanProperty isFull = new SimpleBooleanProperty(false);
-    // pour le ctr -Z
+    // pour le ctr -Z, va stocker des copies profondes de l'objet grid
     private List<Grid> history = new ArrayList<>();
 
     public Board(){
@@ -69,6 +69,14 @@ public class Board {
             }
         }
         return newGrid;
+    }
+    public void undo() {
+        if(history.size() > 1) {
+            // supprimer le dernier
+            history.remove(history.size() -1);
+            Grid previouGrid = history.get(history.size() - 1);
+            grid.setGrid(previouGrid);
+        }
     }
 
 }
